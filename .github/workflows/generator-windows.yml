@@ -13,11 +13,7 @@ on:
         required: true
         default: ''
         type: string
-      extras:
-        description: 'extra json data'
-        required: false
-        default: '{}'
-        type: string
+
 
 env:
   SCITER_RUST_VERSION: "1.75" # https://github.com/rustdesk/rustdesk/discussions/7503, also 1.78 has ABI change which causes our sciter version not working, https://blog.rust-lang.org/2024/03/30/i128-layout-update.html
@@ -374,17 +370,7 @@ jobs:
         shell: bash
         run: |
           sed -i -e 's|!key.is_empty()|false|' ./src/client.rs
-          
-      - name: hide-cm
-        continue-on-error: true
-        if: |
-          github.event.inputs.extras != '' && 
-          github.event.inputs.extras != null &&
-          fromJson(github.event.inputs.extras).hidecm == 'true'
-        run: |
-          Invoke-WebRequest -Uri https://raw.githubusercontent.com/GabrielUcte/rdgen/refs/heads/master/.github/patches/hidecm.diff -OutFile hidecm.diff
-          git apply hidecm.diff
-          
+
       - name: add cycle monitors to toolbar
         if: env.cycleMonitor == 'true'
         uses: nick-fields/retry@v3
